@@ -4,40 +4,42 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Pulls code from your main branch
                 checkout scm
             }
         }
 
         stage('Setup Environment') {
             steps {
-                // Creates an isolated virtual environment and installs dependencies
-                sh '''
+                // dir('project1') forces Jenkins to run these commands inside that subfolder
+                dir('project1') {
                     python3 -m venv venv
                     ./venv/bin/pip install --upgrade pip
-                    ./venv/bin/pip install -r requirements.txt
-                '''
+                    // Note: matching your file name 'requirement.txt'
+                    ./venv/bin/pip install -r requirement.txt
+                }
             }
         }
 
         stage('Run Unit Tests') {
             steps {
-                // Runs the pytest suite inside the virtual environment
-                sh './venv/bin/pytest'
+                dir('project1') {
+                    ./venv/bin/pytest
+                }
             }
         }
 
         stage('Build & Package') {
             steps {
-                // Compresses the app code into a tarball, ignoring caches and venv
-                sh 'tar --exclude="venv" --exclude="__pycache__" --exclude=".pytest_cache" -czf hello-devops.tar.gz .'
+                dir('project1') {
+                    sh 'tar --exclude="venv" --exclude="__pycache__" --exclude=".pytest_cache" -czf hello-devops.tar.gz .'
+                }
             }
         }
 
         stage('Archive Artifacts') {
             steps {
-                // Permanently saves the package inside the Jenkins UI
-                archiveArtifacts artifacts: 'hello-devops.tar.gz', fingerprint: true
+                // Directs Jenkins to find the tarball inside the project1 folder
+                archiveArtifacts artifacts: 'project1/hello-devops.tar.gz', fingerprint: true
             }
         }
     }
