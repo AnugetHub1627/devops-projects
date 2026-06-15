@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pulls code from your main branch
+                checkout scm
+            }
+        }
+
+        stage('Setup Environment') {
+            steps {
+                // Creates an isolated virtual environment and installs dependencies
+                sh '''
+                    python3 -m venv venv
+                    ./venv/bin/pip install --upgrade pip
+                    ./venv/bin/pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                // Runs the pytest suite inside the virtual environment
+                sh './venv/bin/pytest'
+            }
+        }
+
+        stage('Build & Package') {
+            steps {
+                // Compresses the app code into a tarball, ignoring caches and venv
+                sh 'tar --exclude="venv" --exclude="__pycache__" --exclude=".pytest_cache" -czf hello-devops.tar.gz .'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                // Permanently saves the package inside the Jenkins UI
+                archiveArtifacts artifacts: 'hello-devops.tar.gz', fingerprint: true
+            }
+        }
+    }
+}
