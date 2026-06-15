@@ -10,12 +10,13 @@ pipeline {
 
         stage('Setup Environment') {
             steps {
-                // dir('project1') forces Jenkins to run these commands inside that subfolder
                 dir('project1') {
-                    python3 -m venv venv
-                    ./venv/bin/pip install --upgrade pip
-                    // Note: matching your file name 'requirement.txt'
-                    ./venv/bin/pip install -r requirement.txt
+                    // Added 'sh' and wrapped the block in triple quotes
+                    sh '''
+                        python3 -m venv venv
+                        ./venv/bin/pip install --upgrade pip
+                        ./venv/bin/pip install -r requirement.txt
+                    '''
                 }
             }
         }
@@ -23,7 +24,7 @@ pipeline {
         stage('Run Unit Tests') {
             steps {
                 dir('project1') {
-                    ./venv/bin/pytest
+                    sh './venv/bin/pytest'
                 }
             }
         }
@@ -38,7 +39,6 @@ pipeline {
 
         stage('Archive Artifacts') {
             steps {
-                // Directs Jenkins to find the tarball inside the project1 folder
                 archiveArtifacts artifacts: 'project1/hello-devops.tar.gz', fingerprint: true
             }
         }
