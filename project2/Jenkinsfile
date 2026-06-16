@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Change these to your actual Docker Hub account details
         DOCKER_HUB_USER = 'anummdocker'
-        IMAGE_NAME      = 'anummdocker/namurepo09:proj2-pythonAppImage'
+        IMAGE_NAME      = 'namurepo09'
         IMAGE_TAG       = "${BUILD_NUMBER}"
     }
     
