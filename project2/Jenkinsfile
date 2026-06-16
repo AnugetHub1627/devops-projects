@@ -2,7 +2,6 @@ pipeline {
     agent any
     
     environment {
-        // Change these to your actual Docker Hub account details
         DOCKER_HUB_USER = 'anummdocker'
         IMAGE_NAME      = 'namurepo09'
         IMAGE_TAG       = "${BUILD_NUMBER}"
@@ -27,7 +26,7 @@ pipeline {
         stage('Push Image to Docker Hub') {
             steps {
                 script {
-                    // References the credential ID created in Jenkins Step 3
+                
                     docker.withRegistry('', 'docker-hub-credentials') {
                         echo "Pushing build version image..."
                         dockerImage.push()
