@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     echo "Building the Python 3.9 Docker image..."
-                    dockerImage = docker.build("${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}")
+                    dockerImage = docker.build("${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}", "-f project2/Dockerfile .")
                 }
             }
         }
