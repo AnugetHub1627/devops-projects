@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    
+    environment {
+        // Change these to your actual Docker Hub account details
+        DOCKER_HUB_USER = 'anummdocker'
+        IMAGE_NAME      = 'anummdocker/namurepo09:proj2-pythonAppImage'
+        IMAGE_TAG       = "${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Fetch Source From GitHub') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo "Building the Python 3.9 Docker image..."
+                    dockerImage = docker.build("${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}")
+                }
+            }
+        }
+        
+        stage('Push Image to Docker Hub') {
+            steps {
+                script {
+                    // References the credential ID created in Jenkins Step 3
+                    docker.withRegistry('', 'docker-hub-credentials') {
+                        echo "Pushing build version image..."
+                        dockerImage.push()
+                        echo "Pushing latest tag..."
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Container on EC2') {
+            steps {
+                script {
+                    echo "Stopping older app containers to free up port 8081..."
+                    sh "docker stop ${IMAGE_NAME}-container || true"
+                    sh "docker rm ${IMAGE_NAME}-container || true"
+                    
+                    echo "Starting the new container on Host Port 8081..."
+                    // Maps EC2 host port 8081 to container port 8080
+                    sh "docker run -d --name ${IMAGE_NAME}-container -p 8081:8080 ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                echo "Cleaning up local build workspace cache images..."
+                sh "docker rmi ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} || true"
+            }
+        }
+    }
+}
