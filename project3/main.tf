@@ -47,6 +47,9 @@ resource "aws_instance" "proj3_ec2" {
 
                 # Pull and run your app container
                 sudo docker run -d --name proj3-app --publish 80:8080 anummdocker/namurepo09:latest
+                # port 8080 is container internal port means app inside container listen through this port only 
+                # 80 is host port we can access app in brouser by using this port only but here we use http so there is no need to put port no 
+                # after url to access application  
                 EOF
 
     tags = {
