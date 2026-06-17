@@ -1,0 +1,6 @@
+* to find prot no which port container is running
+sudo docker inspect --format='{{.Config.ExposedPorts}}' proj3-app 
+  output : map[8080/tcp:{}]
+* to find connection of container with particuler port no 
+curl -I http://localhost:80
+  output : HTTP/1.1 200 OK
