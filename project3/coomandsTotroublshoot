@@ -4,3 +4,7 @@ sudo docker inspect --format='{{.Config.ExposedPorts}}' proj3-app
 * to find connection of container with particuler port no 
 curl -I http://localhost:80
   output : HTTP/1.1 200 OK
+
+Note : use above commands in newly created ec2 server
+
+we can trubleshoot by accessing newly created ec2 and using docker commands in it 
