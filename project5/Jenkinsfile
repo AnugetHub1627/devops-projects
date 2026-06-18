@@ -1,1 +1,47 @@
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'The exact Docker Hub image tag to deploy')
+    }
+    
+    environment {
+        DOCKER_USER         = 'anummdocker'      // Your exact Docker Hub Username
+        IMAGE_NAME          = 'namurepo09'       // Your exact Repository Name
+        KUBE_CREDENTIALS_ID = 'kubeconfig-credentials'
+    }
+    
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Pulls the latest code and manifests from your Git repository
+                checkout scm
+            }
+        }
+
+        stage('Update Manifest Image') {
+            steps {
+                script {
+                    // Modifies your proj5.yml dynamically to use the selected tag
+                    sh "sed -i 's|image: .*|image: ${DOCKER_USER}/${IMAGE_NAME}:${params.IMAGE_TAG}|g' proj5.yml"
+                    
+                    // Displays the updated file in the Jenkins console log for verification
+                    sh "cat proj5.yml"
+                }
+            }
+        }
+
+        stage('Deploy to K8s Cluster') {
+            steps {
+                script {
+                    // Uses the Kubernetes CLI plugin to securely apply the manifest
+                    withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
+                        sh "kubectl apply -f proj5.yml"
+                        sh "kubectl rollout status deployment/proj5-dp"
+                    }
+                }
+            }
+        }
+    }
+}
 
