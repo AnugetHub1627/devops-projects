@@ -23,10 +23,10 @@ pipeline {
             steps {
                 script {
                     // Modifies your proj5.yml dynamically to use the selected tag
-                    sh "sed -i 's|image: .*|image: ${DOCKER_USER}/${IMAGE_NAME}:${params.IMAGE_TAG}|g' proj5.yml"
+                    sh "sed -i 's|image: .*|image: ${DOCKER_USER}/${IMAGE_NAME}:${params.IMAGE_TAG}|g' project5/proj5.yml"
                     
                     // Displays the updated file in the Jenkins console log for verification
-                    sh "cat proj5.yml"
+                    sh "cat project5/proj5.yml"
                 }
             }
         }
@@ -36,7 +36,7 @@ pipeline {
                 script {
                     // Uses the Kubernetes CLI plugin to securely apply the manifest
                     withKubeConfig([credentialsId: "${KUBE_CREDENTIALS_ID}"]) {
-                        sh "kubectl apply -f proj5.yml"
+                        sh "kubectl apply -f project5/proj5.yml"
                         sh "kubectl rollout status deployment/proj5-dp"
                     }
                 }
