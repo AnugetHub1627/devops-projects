@@ -1,1 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: proj4-dp
+spec: 
+  replicas: 3
+  selector:
+    matchLabels: 
+      target: devops-project4
+  template: 
+    metadata:
+      labels: 
+        target: devops-project4
+    spec:
+      containers: 
+      - name: proj4_cont
+        image: anummdocker/namurepo09:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests: 
+            cpu: "250m"
+            memory: "256Mi"
+          limits: 
+            cpu: "500m"
+            memory: "512Mi"
 
+---
+#manifest for NodePort services
+apiVersion: v1 
+kind: Service
+metadata:
+  name: proj4_servicelb
+spec:
+  type: NodePort
+  selector: 
+    target: devops-project4
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080    
