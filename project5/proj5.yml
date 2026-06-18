@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: proj4-dp
+  name: proj5-dp
 spec: 
   replicas: 3
   selector:
     matchLabels: 
-      target: devops-project4
+      target: devops-project5
   template: 
     metadata:
       labels: 
-        target: devops-project4
+        target: devops-project5
     spec:
       containers: 
-      - name: proj4-cont
+      - name: proj5-cont
         image: anummdocker/namurepo09:latest
         ports:
         - containerPort: 8080
@@ -26,15 +26,15 @@ spec:
             memory: "512Mi"
 
 ---
-#manifest for NodePort services
+#manifest for load balalncer
 apiVersion: v1 
 kind: Service
 metadata:
-  name: proj4-servicelb
+  name: proj5-servicelb
 spec:
   type: NodePort
   selector: 
-    target: devops-project4
+    target: devops-project5
   ports:
   - protocol: TCP
     port: 80
