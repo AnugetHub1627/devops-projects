@@ -1,1 +1,32 @@
+#!/bin/bash
+############ AWS resource Tracker script #########
+## Author : Anuradha
+## Date : 30 June 2026
+## version v1
+# this script will report AWS resources used ####
+# AWS EC2
+# AWS S3
+# AWS Lambda
+# AWS IAM users
+###################################################
+
+#list s3 buckets
+
+echo "list pf s3 bukcets"
+aws s3 ls >> resourceTracker
+
+#list ec2 instances
+echo "list pf s3 ec2 instances"
+#aws ec2 describe-instances            this command gives very detailed output that is not required to we using following command to simplify output
+aws ec2 describe-instances | jq '.Reservations[].Instances[].InstanceId' >> resourceTracker
+
+#list lambda
+echo "list pf s3 lambda functions"
+aws lambda list-functions >> resourceTracker
+
+#list IAM users
+echo "list pf IAM users"
+aws iam list-users >> resourceTracker
+
+
 
